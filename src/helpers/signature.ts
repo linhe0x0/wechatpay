@@ -1,11 +1,11 @@
-import cryptoRandomString from 'crypto-random-string'
 import _ from 'lodash'
 
 import { sha256WithRSA } from './crypto'
 import { getTimestampSeconds } from './date'
 import logger from './logger'
+import { getNonce } from './nonce'
 
-interface signPayload {
+interface SignAuthorizationTokenPayload {
   method: string
   url: string
   timestamp: string
@@ -13,14 +13,36 @@ interface signPayload {
   body: string
 }
 
-export function sign(
+export function signAuthorizationToken(
   privateKey: string | Buffer,
-  payload: signPayload
+  payload: SignAuthorizationTokenPayload
 ): string {
   const toBeSignedStr = `${payload.method}\n${payload.url}\n${payload.timestamp}\n${payload.nonce}\n${payload.body}\n`
   const signature = sha256WithRSA(privateKey, toBeSignedStr, 'base64')
 
-  logger.debug(`sign request payload`, {
+  logger.debug(`sign authorization token payload`, {
+    toBeSignedStr,
+    signature,
+  })
+
+  return signature
+}
+
+interface SignPaymentPayload {
+  appID: string
+  timestamp: string
+  nonce: string
+  body: string
+}
+
+export function signPayment(
+  privateKey: string | Buffer,
+  payload: SignPaymentPayload
+): string {
+  const toBeSignedStr = `${payload.appID}\n${payload.timestamp}\n${payload.nonce}\n${payload.body}\n`
+  const signature = sha256WithRSA(privateKey, toBeSignedStr, 'base64')
+
+  logger.debug(`sign payment payload`, {
     toBeSignedStr,
     signature,
   })
@@ -39,9 +61,9 @@ export function getAuthorizationToken(
   const schema = 'WECHATPAY2-SHA256-RSA2048'
 
   const timestamp = getTimestampSeconds().toString()
-  const nonce = cryptoRandomString({ length: 32 })
+  const nonce = getNonce()
 
-  const signature = sign(privateKey, {
+  const signature = signAuthorizationToken(privateKey, {
     method,
     url,
     timestamp,

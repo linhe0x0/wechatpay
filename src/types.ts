@@ -23,3 +23,17 @@ export interface SDK {
 
   request(): Got
 }
+
+interface Certificate {
+  algorithm: string
+  nonce: string
+  associated_data: string
+  ciphertext: string
+}
+
+export interface CertificateInfo {
+  serial_no: string
+  effective_time: string
+  expire_time: string
+  encrypt_certificate: Certificate
+}

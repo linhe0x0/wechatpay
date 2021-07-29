@@ -2,15 +2,13 @@ import { LogLevel } from 'consola'
 import got, { Got, NormalizedOptions } from 'got'
 import _ from 'lodash'
 
-import {
-  CertificateAPI,
-  CertificateInfo,
-  getCertificateList,
-} from './certificates'
+import { CertificateAPI, getCertificateList } from './certificates'
 import { WECHAT_PAYMENT_API_BASE } from './constants'
 import logger from './helpers/logger'
+import { outputRequest, outputResponse, parseError } from './helpers/request'
 import { getAuthorizationToken } from './helpers/signature'
-import { SDK, SDKMetadata, SDKOptions } from './types'
+import { jsapi, PayAPI } from './pay'
+import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
 
 export class WechatPayment implements SDK {
   // https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay3_1.shtml
@@ -24,6 +22,7 @@ export class WechatPayment implements SDK {
   certificateList: CertificateInfo[]
 
   certificate: CertificateAPI
+  pay: PayAPI
 
   constructor(metadata: SDKMetadata, options?: Partial<SDKOptions>) {
     this.mchID = metadata.mchID
@@ -46,6 +45,9 @@ export class WechatPayment implements SDK {
     this.certificate = {
       getCertificateList: getCertificateList.bind(this),
     }
+    this.pay = {
+      jsapi: jsapi.bind(this),
+    }
   }
 
   config(options: Partial<SDKOptions>): WechatPayment {
@@ -61,7 +63,7 @@ export class WechatPayment implements SDK {
       const certificateNo = this.privateSerialNo
       const method = options.method.toUpperCase()
       const url = options.url.pathname
-      const body = options.body ? options.body.toString() : ''
+      const body = options.json ? JSON.stringify(options.json) : ''
 
       const authorization = getAuthorizationToken(
         this.privateKey,
@@ -77,9 +79,14 @@ export class WechatPayment implements SDK {
 
     const instance = got.extend({
       prefixUrl: WECHAT_PAYMENT_API_BASE,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       responseType: 'json',
       hooks: {
-        beforeRequest: [addAuthorization],
+        beforeRequest: [addAuthorization, outputRequest],
+        afterResponse: [outputResponse],
+        beforeError: [parseError],
       },
     })
 
