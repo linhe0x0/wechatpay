@@ -20,7 +20,10 @@ export function sign(
   const toBeSignedStr = `${payload.method}\n${payload.url}\n${payload.timestamp}\n${payload.nonce}\n${payload.body}\n`
   const signature = sha256WithRSA(privateKey, toBeSignedStr, 'base64')
 
-  logger.debug(`sign string: <${toBeSignedStr}>, result: ${signature}`)
+  logger.debug(`sign request payload`, {
+    toBeSignedStr,
+    signature,
+  })
 
   return signature
 }
