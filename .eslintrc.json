@@ -1,0 +1,7 @@
+{
+  "extends": ["@sqrtthree/eslint-config-ts"],
+  "rules": {
+    "camelcase": "off",
+    "class-methods-use-this": "off"
+  }
+}

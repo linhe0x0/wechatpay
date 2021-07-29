@@ -1,0 +1,43 @@
+{
+  "name": "@sqrtthree/wechatpay",
+  "version": "0.1.0",
+  "description": "微信支付 APIv3 的 Node.js Library",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "rimraf dist && tsc --watch",
+    "prebuild": "npm run lint",
+    "build": "rimraf dist && tsc",
+    "type-check": "tsc --noEmit",
+    "lint": "npm run type-check && eslint --ext ts ./src",
+    "test": "jest --onlyChanged",
+    "test:cov": "jest --coverage --onlyChanged",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sqrthree/wechatpay.git"
+  },
+  "keywords": [],
+  "author": "sqrtthree <imsqrtthree@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sqrthree/wechatpay/issues"
+  },
+  "homepage": "https://github.com/sqrthree/wechatpay#readme",
+  "dependencies": {
+    "consola": "~2.15.3",
+    "crypto-random-string": "~3.3.1",
+    "got": "~11.8.2",
+    "lodash": "~4.17.21"
+  },
+  "devDependencies": {
+    "@sqrtthree/eslint-config-ts": "~0.1.0",
+    "@sqrtthree/prettier-config": "~2.0.1",
+    "@sqrtthree/tsconfig": "~1.0.0",
+    "@types/jest": "~26.0.24",
+    "dotenv": "~10.0.0",
+    "jest": "~27.0.6",
+    "rimraf": "~3.0.2",
+    "typescript": "~4.3.5"
+  }
+}
