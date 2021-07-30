@@ -1,9 +1,9 @@
-import { NormalizedOptions, RequestError, Response } from 'got'
+import type { NormalizedOptions, RequestError, Response } from 'got'
 
 import logger from './logger'
 
 export function outputRequest(options: NormalizedOptions) {
-  logger.debug(`==> ${options.method} ${options.url}`)
+  logger.debug('==>', options.method, options.url)
 
   if (options.json) {
     logger.debug('==> request json:', options.json)
@@ -13,7 +13,7 @@ export function outputRequest(options: NormalizedOptions) {
 export function outputResponse(
   response: Response
 ): Response | Promise<Response> {
-  logger.debug(`<== Response: ${response.statusCode} ${response.statusMessage}`)
+  logger.debug('<==', response.statusCode, response.statusMessage)
   logger.debug('<== response body:', response.body)
 
   return response

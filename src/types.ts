@@ -1,4 +1,21 @@
-import { Got } from 'got'
+import type { Got } from 'got'
+import type { KeyObject } from 'crypto'
+
+interface Certificate {
+  algorithm: string
+  nonce: string
+  associated_data: string
+  ciphertext: string
+  plaintext: string
+  publicKey: KeyObject
+}
+
+export interface CertificateInfo {
+  serial_no: string
+  effective_time: string
+  expire_time: string
+  encrypt_certificate: Certificate
+}
 
 export interface SDKMetadata {
   mchID: string
@@ -21,19 +38,7 @@ export interface SDK {
 
   config(options: Partial<SDKOptions>): SDK
 
+  getCertificateInfo(serialNo: string): Promise<CertificateInfo>
+
   request(): Got
-}
-
-interface Certificate {
-  algorithm: string
-  nonce: string
-  associated_data: string
-  ciphertext: string
-}
-
-export interface CertificateInfo {
-  serial_no: string
-  effective_time: string
-  expire_time: string
-  encrypt_certificate: Certificate
 }

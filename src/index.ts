@@ -1,14 +1,26 @@
 import { LogLevel } from 'consola'
-import got, { Got, NormalizedOptions } from 'got'
+import got from 'got'
 import _ from 'lodash'
 
-import { CertificateAPI, getCertificateList } from './certificates'
+import {
+  CertificateAPI,
+  getCertificateList,
+  getValidCertificateInfo,
+} from './certificates'
 import { WECHAT_PAYMENT_API_BASE } from './constants'
 import logger from './helpers/logger'
 import { outputRequest, outputResponse, parseError } from './helpers/request'
 import { getAuthorizationToken } from './helpers/signature'
-import { jsapi, PayAPI } from './pay'
+import {
+  decryptPaymentNotification,
+  decryptResponse,
+  jsapi,
+  PayAPI,
+  verifyResponse,
+} from './pay'
 import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
+
+import type { Got, NormalizedOptions } from 'got'
 
 export class WechatPayment implements SDK {
   // https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay3_1.shtml
@@ -47,6 +59,9 @@ export class WechatPayment implements SDK {
     }
     this.pay = {
       jsapi: jsapi.bind(this),
+      verifyResponse: verifyResponse.bind(this),
+      decryptResponse: decryptResponse.bind(this),
+      decryptPaymentNotification: decryptPaymentNotification.bind(this),
     }
   }
 
@@ -56,6 +71,26 @@ export class WechatPayment implements SDK {
     logger.level = this.options.debug ? LogLevel.Verbose : LogLevel.Warn
 
     return this
+  }
+
+  getCertificateInfo(serialNo: string): Promise<CertificateInfo> {
+    const certificate = getValidCertificateInfo(this.certificateList, serialNo)
+
+    if (certificate) {
+      return Promise.resolve(certificate)
+    }
+
+    return this.certificate.getCertificateList().then((results) => {
+      this.certificateList = results
+
+      const result = getValidCertificateInfo(results, serialNo)
+
+      if (!result) {
+        throw new Error('No matching certificate was found')
+      }
+
+      return result
+    })
   }
 
   request(): Got {

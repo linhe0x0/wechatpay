@@ -2,19 +2,12 @@ import _ from 'lodash'
 
 import { getTimestampSeconds } from './helpers/date'
 import { getNonce } from './helpers/nonce'
-import { signPayment } from './helpers/signature'
-import { SDK } from './types'
+import { decrypt } from './helpers/sensitive'
+import { signPayment, verifyResponseSignature } from './helpers/signature'
 
-interface Amount {
-  total: number
-  currency?: string
-}
+import type { SDK } from './types'
 
-interface Payer {
-  openid: string
-}
-
-interface GoodsDetail {
+interface PayGoodsDetail {
   merchant_goods_id: string
   wechatpay_goods_id?: string
   goods_name?: string
@@ -22,10 +15,10 @@ interface GoodsDetail {
   unit_price: number
 }
 
-interface Detail {
+interface PayDetail {
   cost_price?: number
   invoice_id?: string
-  goods_detail?: GoodsDetail[]
+  goods_detail?: PayGoodsDetail[]
 }
 
 interface StoreInfo {
@@ -53,9 +46,14 @@ interface JSAPIOptions {
   attach?: string
   notify_url: string
   goods_tag?: string
-  amount: Amount
-  payer: Payer
-  detail?: Detail
+  amount: {
+    total: number
+    currency?: string
+  }
+  payer: {
+    openid: string
+  }
+  detail?: PayDetail
   scene_info?: SceneInfo
   settle_info?: SettleInfo
 }
@@ -108,6 +106,118 @@ export function jsapi(
     })
 }
 
+interface SignaturePayload {
+  timestamp: string
+  nonce: string
+  body: string
+}
+
+export async function verifyResponse(
+  this: SDK,
+  serial: string,
+  data: SignaturePayload,
+  signature: string
+): Promise<boolean> {
+  const certificate = await this.getCertificateInfo(serial)
+
+  return verifyResponseSignature(
+    certificate.encrypt_certificate.publicKey,
+    data,
+    signature
+  )
+}
+
+interface CipherData {
+  algorithm: string
+  ciphertext: string
+  associated_data?: string
+  nonce: string
+}
+
+export function decryptResponse(this: SDK, data: CipherData): any {
+  const result = decrypt(this.apiSecret, data)
+
+  try {
+    return JSON.parse(result)
+  } catch (err) {
+    throw new Error(`cannot parse plaintext: ${result}`)
+  }
+}
+
+interface PaymentNotificationResource extends CipherData {
+  original_type: string
+}
+
+interface PaymentNotificationData {
+  resource: PaymentNotificationResource
+}
+
+interface PaymentNotificationGoodsDetail {
+  goods_id: string
+  quantity: number
+  unit_price: number
+  discount_amount: number
+  goods_remark?: string
+}
+
+interface PromotionDetail {
+  coupon_id: string
+  name?: string
+  scope?: string
+  type?: string
+  amount: number
+  stock_id?: string
+  wechatpay_contribute?: number
+  merchant_contribute?: number
+  other_contribute?: number
+  currency?: string
+  goods_detail?: PaymentNotificationGoodsDetail[]
+}
+
+interface PaymentNotificationResult {
+  appid: string
+  mchid: string
+  out_trade_no: string
+  transaction_id: string
+  trade_type: string
+  trade_state: string
+  trade_state_desc: string
+  bank_type: string
+  attach?: string
+  success_time: string
+  payer: {
+    openid: string
+  }
+  amount: {
+    total: number
+    payer_total: number
+    currency: string
+    payer_currency: string
+  }
+  scene_info?: {
+    device_id?: string
+  }
+  promotion_detail?: PromotionDetail[]
+}
+
+export function decryptPaymentNotification(
+  this: SDK,
+  data: PaymentNotificationData
+): PaymentNotificationResult {
+  return decryptResponse.call(this, data.resource)
+}
+
 export interface PayAPI {
   jsapi(this: SDK, data: JSAPIOptions): Promise<JSAPISignedResponse>
+  verifyResponse(
+    this: SDK,
+    serial: string,
+    data: SignaturePayload,
+    signature: string
+  ): Promise<boolean>
+  decryptResponse(this: SDK, data: CipherData): any
+  decryptPaymentNotification(
+    this: SDK,
+    data: PaymentNotificationData
+  ): PaymentNotificationResult
 }

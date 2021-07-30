@@ -1,9 +1,11 @@
 import _ from 'lodash'
 
-import { sha256WithRSA } from './crypto'
+import { signWithSha256WithRSA, verifyWithSha256WithRSA } from './crypto'
 import { getTimestampSeconds } from './date'
 import logger from './logger'
 import { getNonce } from './nonce'
+
+import type { KeyLike } from 'crypto'
 
 interface SignAuthorizationTokenPayload {
   method: string
@@ -14,13 +16,13 @@ interface SignAuthorizationTokenPayload {
 }
 
 export function signAuthorizationToken(
-  privateKey: string | Buffer,
+  privateKey: KeyLike,
   payload: SignAuthorizationTokenPayload
 ): string {
   const toBeSignedStr = `${payload.method}\n${payload.url}\n${payload.timestamp}\n${payload.nonce}\n${payload.body}\n`
-  const signature = sha256WithRSA(privateKey, toBeSignedStr, 'base64')
+  const signature = signWithSha256WithRSA(privateKey, toBeSignedStr, 'base64')
 
-  logger.debug(`sign authorization token payload`, {
+  logger.debug('sign authorization token payload', {
     toBeSignedStr,
     signature,
   })
@@ -36,13 +38,13 @@ interface SignPaymentPayload {
 }
 
 export function signPayment(
-  privateKey: string | Buffer,
+  privateKey: KeyLike,
   payload: SignPaymentPayload
 ): string {
   const toBeSignedStr = `${payload.appID}\n${payload.timestamp}\n${payload.nonce}\n${payload.body}\n`
-  const signature = sha256WithRSA(privateKey, toBeSignedStr, 'base64')
+  const signature = signWithSha256WithRSA(privateKey, toBeSignedStr, 'base64')
 
-  logger.debug(`sign payment payload`, {
+  logger.debug('sign payment payload', {
     toBeSignedStr,
     signature,
   })
@@ -51,7 +53,7 @@ export function signPayment(
 }
 
 export function getAuthorizationToken(
-  privateKey: string | Buffer,
+  privateKey: KeyLike,
   serialNo: string,
   mchID: string,
   method: string,
@@ -72,4 +74,32 @@ export function getAuthorizationToken(
   })
 
   return `${schema} mchid="${mchID}",nonce_str="${nonce}",signature="${signature}",timestamp="${timestamp}",serial_no="${serialNo}"`
+}
+
+interface VerifyResponseSignaturePayload {
+  timestamp: string
+  nonce: string
+  body: string
+}
+
+export function verifyResponseSignature(
+  publicKey: KeyLike,
+  payload: VerifyResponseSignaturePayload,
+  signature: string
+): boolean {
+  const toBeVerifiedStr = `${payload.timestamp}\n${payload.nonce}\n${payload.body}\n`
+  const result = verifyWithSha256WithRSA(
+    publicKey,
+    toBeVerifiedStr,
+    signature,
+    'base64'
+  )
+
+  logger.debug('verify signature of response', {
+    toBeVerifiedStr,
+    signature,
+    result,
+  })
+
+  return result
 }
