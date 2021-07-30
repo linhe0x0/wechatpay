@@ -7,6 +7,10 @@ import { signPayment, verifyResponseSignature } from './helpers/signature'
 
 import type { SDK } from './types'
 
+interface Payer {
+  openid: string
+}
+
 interface PayGoodsDetail {
   merchant_goods_id: string
   wechatpay_goods_id?: string
@@ -50,9 +54,7 @@ interface JSAPIOptions {
     total: number
     currency?: string
   }
-  payer: {
-    openid: string
-  }
+  payer: Payer
   detail?: PayDetail
   scene_info?: SceneInfo
   settle_info?: SettleInfo
@@ -152,7 +154,7 @@ interface PaymentNotificationData {
   resource: PaymentNotificationResource
 }
 
-interface PaymentNotificationGoodsDetail {
+interface GoodsDetail {
   goods_id: string
   quantity: number
   unit_price: number
@@ -171,7 +173,7 @@ interface PromotionDetail {
   merchant_contribute?: number
   other_contribute?: number
   currency?: string
-  goods_detail?: PaymentNotificationGoodsDetail[]
+  goods_detail?: GoodsDetail[]
 }
 
 interface PaymentNotificationResult {
@@ -185,9 +187,7 @@ interface PaymentNotificationResult {
   bank_type: string
   attach?: string
   success_time: string
-  payer: {
-    openid: string
-  }
+  payer: Payer
   amount: {
     total: number
     payer_total: number
@@ -207,6 +207,60 @@ export function decryptPaymentNotification(
   return decryptResponse.call(this, data.resource)
 }
 
+interface QueryTransactionFilter {
+  transaction_id?: string
+  out_trade_no?: string
+}
+
+interface QueryTransactionResponse {
+  appid: string
+  mchid: string
+  out_trade_no: string
+  transaction_id?: string
+  trade_type?: string
+  trade_state: string
+  trade_state_desc: string
+  bank_type?: string
+  attach?: string
+  success_time?: string
+  payer: Payer
+  amount?: {
+    total?: number
+    payer_total?: number
+    currency?: string
+    payer_currency?: string
+  }
+  scene_info?: {
+    device_id?: string
+  }
+  promotion_detail?: PromotionDetail[]
+}
+
+export function queryTransaction(
+  this: SDK,
+  filter: QueryTransactionFilter
+): Promise<QueryTransactionResponse> {
+  if (!filter.transaction_id && !filter.out_trade_no) {
+    throw new Error('the transaction_id or out_trade_no is missing')
+  }
+
+  if (filter.transaction_id && filter.out_trade_no) {
+    throw new Error('transaction_id and out_trade_no are in conflict')
+  }
+
+  const url = filter.transaction_id
+    ? `pay/transactions/id/${filter.transaction_id}`
+    : `pay/transactions/out-trade-no/${filter.out_trade_no}`
+
+  return this.request()
+    .get<QueryTransactionResponse>(url, {
+      searchParams: {
+        mchid: this.mchID,
+      },
+    })
+    .then((response) => response.body)
+}
+
 export interface PayAPI {
   jsapi(this: SDK, data: JSAPIOptions): Promise<JSAPISignedResponse>
   verifyResponse(
@@ -220,4 +274,7 @@ export interface PayAPI {
     this: SDK,
     data: PaymentNotificationData
   ): PaymentNotificationResult
+  queryTransaction(
+    filter: QueryTransactionFilter
+  ): Promise<QueryTransactionResponse>
 }

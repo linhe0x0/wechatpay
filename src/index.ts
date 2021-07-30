@@ -7,7 +7,6 @@ import {
   getCertificateList,
   getValidCertificateInfo,
 } from './certificates'
-import { WECHAT_PAYMENT_API_BASE } from './constants'
 import logger from './helpers/logger'
 import { outputRequest, outputResponse, parseError } from './helpers/request'
 import { getAuthorizationToken } from './helpers/signature'
@@ -16,6 +15,7 @@ import {
   decryptResponse,
   jsapi,
   PayAPI,
+  queryTransaction,
   verifyResponse,
 } from './pay'
 import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
@@ -62,6 +62,7 @@ export class WechatPayment implements SDK {
       verifyResponse: verifyResponse.bind(this),
       decryptResponse: decryptResponse.bind(this),
       decryptPaymentNotification: decryptPaymentNotification.bind(this),
+      queryTransaction: queryTransaction.bind(this),
     }
   }
 
@@ -97,7 +98,7 @@ export class WechatPayment implements SDK {
     const addAuthorization = (options: NormalizedOptions) => {
       const serialNo = this.privateSerialNo
       const method = options.method.toUpperCase()
-      const url = options.url.pathname
+      const url = `${options.url.pathname}${options.url.search}`
       const body = options.json ? JSON.stringify(options.json) : ''
 
       const authorization = getAuthorizationToken(
@@ -113,7 +114,7 @@ export class WechatPayment implements SDK {
     }
 
     const instance = got.extend({
-      prefixUrl: WECHAT_PAYMENT_API_BASE,
+      prefixUrl: 'https://api.mch.weixin.qq.com/v3',
       headers: {
         'Content-Type': 'application/json',
       },

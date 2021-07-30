@@ -126,3 +126,38 @@ describe('decryptPaymentNotification', () => {
     }).toThrow()
   })
 })
+
+describe('queryTransaction', () => {
+  test('should return transaction info with valid transaction_id', async () => {
+    const result = await wechatPayment.pay.queryTransaction({
+      transaction_id: '4200001154202107300042303661',
+    })
+
+    expect(result.mchid).toBe(process.env.WECHAT_PAYMENT_MCH_ID)
+    expect(result.transaction_id).toBe('4200001154202107300042303661')
+  })
+
+  test('should return transaction info with valid out_trade_no', async () => {
+    const result = await wechatPayment.pay.queryTransaction({
+      out_trade_no: '9ebf194d5bd04a0bb3848676',
+    })
+
+    expect(result.mchid).toBe(process.env.WECHAT_PAYMENT_MCH_ID)
+    expect(result.out_trade_no).toBe('9ebf194d5bd04a0bb3848676')
+  })
+
+  test('should throw error if transaction_id ans out_trade_no are missing', async () => {
+    expect(() => {
+      wechatPayment.pay.queryTransaction({})
+    }).toThrow('the transaction_id or out_trade_no is missing')
+  })
+
+  test('should throw error if transaction_id ans out_trade_no are in conflict', async () => {
+    expect(() => {
+      wechatPayment.pay.queryTransaction({
+        transaction_id: 't',
+        out_trade_no: 'o',
+      })
+    }).toThrow('transaction_id and out_trade_no are in conflict')
+  })
+})
