@@ -52,7 +52,7 @@ export function signPayment(
 
 export function getAuthorizationToken(
   privateKey: string | Buffer,
-  certificateNo: string,
+  serialNo: string,
   mchID: string,
   method: string,
   url: string,
@@ -71,5 +71,5 @@ export function getAuthorizationToken(
     body: body || '',
   })
 
-  return `${schema} mchid="${mchID}",nonce_str="${nonce}",signature="${signature}",timestamp="${timestamp}",serial_no="${certificateNo}"`
+  return `${schema} mchid="${mchID}",nonce_str="${nonce}",signature="${signature}",timestamp="${timestamp}",serial_no="${serialNo}"`
 }

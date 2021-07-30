@@ -60,14 +60,14 @@ export class WechatPayment implements SDK {
 
   request(): Got {
     const addAuthorization = (options: NormalizedOptions) => {
-      const certificateNo = this.privateSerialNo
+      const serialNo = this.privateSerialNo
       const method = options.method.toUpperCase()
       const url = options.url.pathname
       const body = options.json ? JSON.stringify(options.json) : ''
 
       const authorization = getAuthorizationToken(
         this.privateKey,
-        certificateNo,
+        serialNo,
         this.mchID,
         method,
         url,
