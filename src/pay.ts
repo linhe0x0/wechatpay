@@ -162,6 +162,17 @@ interface GoodsDetail {
   goods_remark?: string
 }
 
+type TradeType = 'JSAPI' | 'NATIVE' | 'APP' | 'MICROPAY' | 'MWEB' | 'FACEPAY'
+type TradeState =
+  | 'SUCCESS'
+  | 'REFUND'
+  | 'NOTPAY'
+  | 'CLOSED'
+  | 'REVOKED'
+  | 'USERPAYING'
+  | 'PAYERROR'
+  | 'ACCEPT'
+
 interface PromotionDetail {
   coupon_id: string
   name?: string
@@ -181,8 +192,8 @@ interface PaymentNotificationResult {
   mchid: string
   out_trade_no: string
   transaction_id: string
-  trade_type: string
-  trade_state: string
+  trade_type: TradeType
+  trade_state: TradeState
   trade_state_desc: string
   bank_type: string
   attach?: string
@@ -217,8 +228,8 @@ interface QueryTransactionResponse {
   mchid: string
   out_trade_no: string
   transaction_id?: string
-  trade_type?: string
-  trade_state: string
+  trade_type?: TradeType
+  trade_state: TradeState
   trade_state_desc: string
   bank_type?: string
   attach?: string
