@@ -2,6 +2,10 @@
   "extends": ["@sqrtthree/eslint-config-ts"],
   "rules": {
     "camelcase": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "no-param-reassign": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/order": "off",
+    "lines-between-class-members": "off"
   }
 }

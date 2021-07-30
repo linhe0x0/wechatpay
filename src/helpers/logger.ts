@@ -2,6 +2,7 @@ import consola from 'consola'
 import _ from 'lodash'
 
 import type { ConsolaLogObject } from 'consola'
+
 const tag = 'wechatpay'
 
 const logger = consola.withTag(tag)

@@ -2,7 +2,7 @@ import type { NormalizedOptions, RequestError, Response } from 'got'
 
 import logger from './logger'
 
-export function outputRequest(options: NormalizedOptions) {
+export function outputRequest(options: NormalizedOptions): void {
   logger.debug('==>', options.method, options.url)
 
   if (options.json) {

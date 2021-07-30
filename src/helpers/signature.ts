@@ -1,11 +1,9 @@
-import _ from 'lodash'
+import type { KeyLike } from 'crypto'
 
 import { signWithSha256WithRSA, verifyWithSha256WithRSA } from './crypto'
 import { getTimestampSeconds } from './date'
 import logger from './logger'
 import { getNonce } from './nonce'
-
-import type { KeyLike } from 'crypto'
 
 interface SignAuthorizationTokenPayload {
   method: string
