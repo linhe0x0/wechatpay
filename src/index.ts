@@ -1,4 +1,4 @@
-import { LogLevel } from 'consola'
+import { BasicReporter, JSONReporter, LogLevel } from 'consola'
 import got from 'got'
 import _ from 'lodash'
 
@@ -42,18 +42,17 @@ export class WechatPayment implements SDK {
     this.privateKey = metadata.privateKey
     this.privateSerialNo = metadata.privateSerialNo
     this.apiSecret = metadata.apiSecret
-
-    logger.debug(
-      `Init wechat payment sdk with mchID: ${metadata.mchID}, privateSerialNo: ${metadata.privateSerialNo}, apiSecret: ${metadata.apiSecret}`
-    )
+    this.certificateList = []
 
     this.options = _.defaults(options, {
       debug: false,
     })
 
-    logger.level = this.options.debug ? LogLevel.Verbose : LogLevel.Warn
+    this.configLog()
 
-    this.certificateList = []
+    logger.debug(
+      `Init wechat payment sdk with mchID: ${metadata.mchID}, privateSerialNo: ${metadata.privateSerialNo}, apiSecret: ${metadata.apiSecret}`
+    )
 
     this.certificate = {
       getCertificateList: getCertificateList.bind(this),
@@ -71,9 +70,28 @@ export class WechatPayment implements SDK {
   config(options: Partial<SDKOptions>): WechatPayment {
     this.options = _.assign(this.options, options)
 
-    logger.level = this.options.debug ? LogLevel.Verbose : LogLevel.Warn
+    this.configLog()
 
     return this
+  }
+
+  configLog(): void {
+    const test =
+      process.env.NODE_ENV === 'testing' || process.env.NODE_ENV === 'test'
+
+    if (test) {
+      logger.level = LogLevel.Silent
+
+      return
+    }
+
+    logger.level = this.options.debug ? LogLevel.Verbose : LogLevel.Warn
+
+    const reporter = this.options.debug
+      ? new BasicReporter()
+      : new JSONReporter()
+
+    logger.setReporters([reporter])
   }
 
   getCertificateInfo(serialNo: string): Promise<CertificateInfo> {
