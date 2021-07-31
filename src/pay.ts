@@ -272,6 +272,16 @@ export function queryTransaction(
     .then((response) => response.body)
 }
 
+export function closeTransaction(this: SDK, outTradeNo: string): Promise<void> {
+  return this.request()
+    .post<void>(`pay/transactions/out-trade-no/${outTradeNo}/close`, {
+      json: {
+        mchid: this.mchID,
+      },
+    })
+    .then((response) => response.body)
+}
+
 export interface PayAPI {
   jsapi(this: SDK, data: JSAPIOptions): Promise<JSAPISignedResponse>
   verifyResponse(
@@ -288,4 +298,5 @@ export interface PayAPI {
   queryTransaction(
     filter: QueryTransactionFilter
   ): Promise<QueryTransactionResponse>
+  closeTransaction(outTradeNo: string): Promise<void>
 }

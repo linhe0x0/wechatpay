@@ -161,3 +161,21 @@ describe('queryTransaction', () => {
     }).toThrow('transaction_id and out_trade_no are in conflict')
   })
 })
+
+describe('closeTransaction', () => {
+  test('should return OK with valid transaction_id', async () => {
+    const result = await wechatPayment.pay.closeTransaction(
+      '4200001154202107300042303661'
+    )
+
+    expect(result).toBe('')
+  })
+
+  test('should return 404 with invalid transaction_id', async () => {
+    try {
+      await wechatPayment.pay.closeTransaction('invalid transaction id')
+    } catch (err) {
+      expect(err.name).toBe('PARAM_ERROR')
+    }
+  })
+})
