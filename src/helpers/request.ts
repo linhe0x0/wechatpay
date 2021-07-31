@@ -3,10 +3,10 @@ import type { NormalizedOptions, RequestError, Response } from 'got'
 import logger from './logger'
 
 export function outputRequest(options: NormalizedOptions): void {
-  logger.debug('==>', options.method, options.url)
+  logger.debug('==>', options.method, options.url.href)
 
   if (options.json) {
-    logger.debug('==> request json:', options.json)
+    logger.debug('==> request json:', JSON.stringify(options.json))
   }
 }
 
@@ -14,7 +14,7 @@ export function outputResponse(
   response: Response
 ): Response | Promise<Response> {
   logger.debug('<==', response.statusCode, response.statusMessage)
-  logger.debug('<== response body:', response.body)
+  logger.debug('<== response body:', JSON.stringify(response.body))
 
   return response
 }
@@ -60,10 +60,10 @@ export function parseError(
 
     logger.error(
       `Error in response: ${err.response.statusCode} ${err.message}`,
-      {
+      JSON.stringify({
         request,
         response,
-      }
+      })
     )
   }
 

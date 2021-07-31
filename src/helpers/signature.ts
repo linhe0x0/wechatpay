@@ -20,10 +20,13 @@ export function signAuthorizationToken(
   const toBeSignedStr = `${payload.method}\n${payload.url}\n${payload.timestamp}\n${payload.nonce}\n${payload.body}\n`
   const signature = signWithSha256WithRSA(privateKey, toBeSignedStr, 'base64')
 
-  logger.debug('sign authorization token payload', {
-    toBeSignedStr,
-    signature,
-  })
+  logger.debug(
+    'sign authorization token payload',
+    JSON.stringify({
+      toBeSignedStr,
+      signature,
+    })
+  )
 
   return signature
 }
