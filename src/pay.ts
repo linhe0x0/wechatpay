@@ -42,7 +42,7 @@ interface SettleInfo {
   profit_sharing?: boolean
 }
 
-interface JSAPIOptions {
+interface JSAPIData {
   appid: string
   description: string
   out_trade_no: string
@@ -74,7 +74,7 @@ interface JSAPISignedResponse {
 
 export function jsapi(
   this: SDK,
-  data: JSAPIOptions
+  data: JSAPIData
 ): Promise<JSAPISignedResponse> {
   _.assign(data, {
     mchid: this.mchID,
@@ -108,7 +108,7 @@ export function jsapi(
     })
 }
 
-interface SignaturePayload {
+interface VerifyResponseData {
   timestamp: string
   nonce: string
   body: string
@@ -117,7 +117,7 @@ interface SignaturePayload {
 export async function verifyResponse(
   this: SDK,
   serial: string,
-  data: SignaturePayload,
+  data: VerifyResponseData,
   signature: string
 ): Promise<boolean> {
   const certificate = await this.getCertificateInfo(serial)
@@ -218,7 +218,7 @@ export function decryptPaymentNotification(
   return decryptResponse.call(this, data.resource)
 }
 
-interface QueryTransactionFilter {
+interface QueryTransactionData {
   transaction_id?: string
   out_trade_no?: string
 }
@@ -249,7 +249,7 @@ interface QueryTransactionResponse {
 
 export function queryTransaction(
   this: SDK,
-  filter: QueryTransactionFilter
+  filter: QueryTransactionData
 ): Promise<QueryTransactionResponse> {
   if (!filter.transaction_id && !filter.out_trade_no) {
     throw new Error('the transaction_id or out_trade_no is missing')
@@ -283,11 +283,11 @@ export function closeTransaction(this: SDK, outTradeNo: string): Promise<void> {
 }
 
 export interface PayAPI {
-  jsapi(this: SDK, data: JSAPIOptions): Promise<JSAPISignedResponse>
+  jsapi(this: SDK, data: JSAPIData): Promise<JSAPISignedResponse>
   verifyResponse(
     this: SDK,
     serial: string,
-    data: SignaturePayload,
+    data: VerifyResponseData,
     signature: string
   ): Promise<boolean>
   decryptResponse(this: SDK, data: CipherData): any
@@ -296,7 +296,7 @@ export interface PayAPI {
     data: PaymentNotificationData
   ): PaymentNotificationResult
   queryTransaction(
-    filter: QueryTransactionFilter
+    filter: QueryTransactionData
   ): Promise<QueryTransactionResponse>
   closeTransaction(outTradeNo: string): Promise<void>
 }
