@@ -1,4 +1,4 @@
-import { decrypt } from './helpers/sensitive'
+import { CipherData, decryptData } from './helpers/sensitive'
 
 import type { SDK } from './types'
 
@@ -76,23 +76,6 @@ export function refund(this: SDK, data: RefundData): Promise<RefundResponse> {
     .then((response) => response.body)
 }
 
-interface CipherData {
-  algorithm: string
-  ciphertext: string
-  associated_data?: string
-  nonce: string
-}
-
-export function decryptResponse(this: SDK, data: CipherData): any {
-  const result = decrypt(this.apiSecret, data)
-
-  try {
-    return JSON.parse(result)
-  } catch (err) {
-    throw new Error(`cannot parse plaintext: ${result}`)
-  }
-}
-
 interface RefundNotificationResource extends CipherData {
   original_type: string
 }
@@ -122,7 +105,7 @@ export function decryptRefundNotification(
   this: SDK,
   data: RefundNotificationData
 ): RefundNotificationResult {
-  return decryptResponse.call(this, data.resource)
+  return decryptData<RefundNotificationResult>(this.apiSecret, data.resource)
 }
 
 export interface RefundAPI {
