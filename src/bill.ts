@@ -1,3 +1,8 @@
+import { createWriteStream } from 'fs'
+import { pipeline } from 'stream/promises'
+
+import type { Readable } from 'stream'
+
 import type { SDK } from './types'
 
 interface GetTradeBillListData {
@@ -46,6 +51,37 @@ export function getFundFlowBillList(
     .then((response) => response.body)
 }
 
+export function downloadBillFile(this: SDK, url: string): Readable
+export function downloadBillFile(
+  this: SDK,
+  url: string,
+  filename: string
+): Promise<void>
+export function downloadBillFile(
+  this: SDK,
+  url: string,
+  filename?: string
+): Promise<void> | Readable {
+  if (url.startsWith('https://api.mch.weixin.qq.com/v3')) {
+    url = url.substring(33)
+  }
+
+  if (filename) {
+    return pipeline(
+      this.request().stream(url, {
+        method: 'GET',
+        responseType: 'buffer',
+      }),
+      createWriteStream(filename)
+    )
+  }
+
+  return this.request().stream(url, {
+    method: 'GET',
+    responseType: 'buffer',
+  })
+}
+
 export interface billAPI {
   getTradeBillList(
     data: GetTradeBillListData
@@ -53,4 +89,5 @@ export interface billAPI {
   getFundFlowBillList(
     data: GetFundFlowBillListData
   ): Promise<GetFundFlowBillListResponse>
+  downloadBillFile(url: string, filename?: string): Promise<void> | Readable
 }

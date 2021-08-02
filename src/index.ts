@@ -2,7 +2,7 @@ import { BasicReporter, JSONReporter, LogLevel } from 'consola'
 import got from 'got'
 import _ from 'lodash'
 
-import { getFundFlowBillList, getTradeBillList } from './bill'
+import { downloadBillFile, getFundFlowBillList, getTradeBillList } from './bill'
 import { getCertificateList, getValidCertificateInfo } from './certificates'
 import logger from './helpers/logger'
 import { outputRequest, outputResponse, parseError } from './helpers/request'
@@ -82,9 +82,11 @@ export class WechatPayment implements SDK {
       decryptRefundNotification: decryptRefundNotification.bind(this),
       queryRefundInfo: queryRefundInfo.bind(this),
     }
+
     this.bill = {
       getTradeBillList: getTradeBillList.bind(this),
       getFundFlowBillList: getFundFlowBillList.bind(this),
+      downloadBillFile: downloadBillFile.bind(this),
     }
   }
 
