@@ -245,9 +245,8 @@ export function closeTransaction(this: SDK, outTradeNo: string): Promise<void> {
 }
 
 export interface PayAPI {
-  jsapi(this: SDK, data: JSAPIData): Promise<JSAPISignedResponse>
+  jsapi(data: JSAPIData): Promise<JSAPISignedResponse>
   decryptPaymentNotification(
-    this: SDK,
     data: PaymentNotificationData
   ): PaymentNotificationResult
   queryTransaction(

@@ -111,7 +111,6 @@ export function decryptRefundNotification(
 export interface RefundAPI {
   refund(data: RefundData): Promise<RefundResponse>
   decryptRefundNotification(
-    this: SDK,
     data: RefundNotificationData
   ): RefundNotificationResult
 }
