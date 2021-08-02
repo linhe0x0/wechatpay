@@ -19,9 +19,21 @@ const wechatPayment = new WechatPayment({
 })
 
 describe('getTradeBillList', () => {
-  test('should return 200 with valid data', async () => {
+  test('should return 400 with special day', async () => {
     try {
       await wechatPayment.bill.getTradeBillList({
+        bill_date: '2021-08-01',
+      })
+    } catch (err) {
+      expect(err.name).toBe('NO_STATEMENT_EXIST')
+    }
+  })
+})
+
+describe('getFundFlowBillList', () => {
+  test('should return 400 with special day', async () => {
+    try {
+      await wechatPayment.bill.getFundFlowBillList({
         bill_date: '2021-08-01',
       })
     } catch (err) {
