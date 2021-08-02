@@ -19,7 +19,7 @@ import {
   queryTransaction,
   verifyResponse,
 } from './pay'
-import { refund, RefundAPI } from './refund'
+import { decryptRefundNotification, refund, RefundAPI } from './refund'
 import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
 
 import type { Got, NormalizedOptions } from 'got'
@@ -69,6 +69,7 @@ export class WechatPayment implements SDK {
     }
     this.refund = {
       refund: refund.bind(this),
+      decryptRefundNotification: decryptRefundNotification.bind(this),
     }
   }
 

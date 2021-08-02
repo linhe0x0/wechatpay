@@ -1,3 +1,4 @@
+import { decrypt } from './helpers/sensitive'
 import { SDK } from './types'
 
 interface RefundAmountFromItem {
@@ -32,8 +33,6 @@ interface RefundData {
   goods_detail?: RefundGoodsDetailItem[]
 }
 
-type RefundStatus = 'SUCCESS' | 'CLOSED' | 'PROCESSING' | 'ABNORMAL'
-
 interface PromotionDetailItem {
   promotion_id: string
   scope: 'GLOBAL' | 'SINGLE'
@@ -52,7 +51,7 @@ interface RefundResponse {
   user_received_account: string
   success_time?: string
   create_time: string
-  status: RefundStatus
+  status: 'SUCCESS' | 'CLOSED' | 'PROCESSING' | 'ABNORMAL'
   funds_account?: string
   amount: {
     total: number
@@ -76,6 +75,59 @@ export function refund(this: SDK, data: RefundData): Promise<RefundResponse> {
     .then((response) => response.body)
 }
 
+interface CipherData {
+  algorithm: string
+  ciphertext: string
+  associated_data?: string
+  nonce: string
+}
+
+export function decryptResponse(this: SDK, data: CipherData): any {
+  const result = decrypt(this.apiSecret, data)
+
+  try {
+    return JSON.parse(result)
+  } catch (err) {
+    throw new Error(`cannot parse plaintext: ${result}`)
+  }
+}
+
+interface RefundNotificationResource extends CipherData {
+  original_type: string
+}
+
+interface RefundNotificationData {
+  resource: RefundNotificationResource
+}
+
+interface RefundNotificationResult {
+  mchid: string
+  out_trade_no: string
+  transaction_id: string
+  out_refund_no: string
+  refund_id: string
+  refund_status: 'SUCCESS' | 'CLOSED' | 'ABNORMAL'
+  success_time?: string
+  user_received_account: string
+  amount: {
+    total: number
+    refund: number
+    payer_total: number
+    payer_refund: number
+  }
+}
+
+export function decryptRefundNotification(
+  this: SDK,
+  data: RefundNotificationData
+): RefundNotificationResult {
+  return decryptResponse.call(this, data.resource)
+}
+
 export interface RefundAPI {
   refund(data: RefundData): Promise<RefundResponse>
+  decryptRefundNotification(
+    this: SDK,
+    data: RefundNotificationData
+  ): RefundNotificationResult
 }
