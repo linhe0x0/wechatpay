@@ -19,6 +19,7 @@ import {
   queryTransaction,
   verifyResponse,
 } from './pay'
+import { refund, RefundAPI } from './refund'
 import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
 
 import type { Got, NormalizedOptions } from 'got'
@@ -36,6 +37,7 @@ export class WechatPayment implements SDK {
 
   certificate: CertificateAPI
   pay: PayAPI
+  refund: RefundAPI
 
   constructor(metadata: SDKMetadata, options?: Partial<SDKOptions>) {
     this.mchID = metadata.mchID
@@ -64,6 +66,9 @@ export class WechatPayment implements SDK {
       decryptPaymentNotification: decryptPaymentNotification.bind(this),
       queryTransaction: queryTransaction.bind(this),
       closeTransaction: closeTransaction.bind(this),
+    }
+    this.refund = {
+      refund: refund.bind(this),
     }
   }
 
