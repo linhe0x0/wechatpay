@@ -2,6 +2,7 @@ import { BasicReporter, JSONReporter, LogLevel } from 'consola'
 import got from 'got'
 import _ from 'lodash'
 
+import { getTradeBillList } from './bill'
 import { getCertificateList, getValidCertificateInfo } from './certificates'
 import logger from './helpers/logger'
 import { outputRequest, outputResponse, parseError } from './helpers/request'
@@ -23,6 +24,7 @@ import type { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
 import type { RefundAPI } from './refund'
 import type { PayAPI } from './pay'
 import type { CertificateAPI } from './certificates'
+import type { billAPI } from './bill'
 
 export class WechatPayment implements SDK {
   // https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay3_1.shtml
@@ -40,6 +42,7 @@ export class WechatPayment implements SDK {
   certificate: CertificateAPI
   pay: PayAPI
   refund: RefundAPI
+  bill: billAPI
 
   constructor(metadata: SDKMetadata, options?: Partial<SDKOptions>) {
     this.mchID = metadata.mchID
@@ -77,6 +80,9 @@ export class WechatPayment implements SDK {
       refund: refund.bind(this),
       decryptRefundNotification: decryptRefundNotification.bind(this),
       queryRefundInfo: queryRefundInfo.bind(this),
+    }
+    this.bill = {
+      getTradeBillList: getTradeBillList.bind(this),
     }
   }
 
