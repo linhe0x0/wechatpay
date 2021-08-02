@@ -109,6 +109,54 @@ export function jsapi(
     })
 }
 
+type AppData = Omit<JSAPIData, 'payer'>
+
+interface AppResponse {
+  prepay_id: string
+}
+
+interface AppSignedResponse {
+  appid: string
+  partnerid: string
+  prepayid: string
+  package: string
+  noncestr: string
+  timestamp: string
+  sign: string
+}
+
+export function app(this: SDK, data: AppData): Promise<AppSignedResponse> {
+  _.assign(data, {
+    mchid: this.mchID,
+  })
+
+  return this.request()
+    .post<AppResponse>('pay/transactions/app', {
+      json: data,
+    })
+    .then((response) => {
+      const prepayID = response.body.prepay_id
+      const timestamp = getTimestampSeconds().toString()
+      const nonce = getNonce()
+      const signature = signPayment(this.privateKey, {
+        appID: data.appid,
+        timestamp,
+        nonce,
+        body: prepayID,
+      })
+
+      return {
+        appid: data.appid,
+        partnerid: this.mchID,
+        prepayid: prepayID,
+        package: 'Sign=WXPay',
+        noncestr: nonce,
+        timestamp,
+        sign: signature,
+      }
+    })
+}
+
 interface PaymentNotificationResource extends CipherData {
   original_type: string
 }
@@ -247,6 +295,7 @@ export function closeTransaction(this: SDK, outTradeNo: string): Promise<void> {
 
 export interface PayAPI {
   jsapi(data: JSAPIData): Promise<JSAPISignedResponse>
+  app(data: AppData): Promise<AppSignedResponse>
   decryptPaymentNotification(
     data: PaymentNotificationData
   ): PaymentNotificationResult

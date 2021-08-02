@@ -8,6 +8,7 @@ import logger from './helpers/logger'
 import { outputRequest, outputResponse, parseError } from './helpers/request'
 import { getAuthorizationToken } from './helpers/signature'
 import {
+  app,
   closeTransaction,
   decryptPaymentNotification,
   jsapi,
@@ -73,6 +74,7 @@ export class WechatPayment implements SDK {
     }
     this.pay = {
       jsapi: jsapi.bind(this),
+      app: app.bind(this),
       decryptPaymentNotification: decryptPaymentNotification.bind(this),
       queryTransactionInfo: queryTransactionInfo.bind(this),
       closeTransaction: closeTransaction.bind(this),

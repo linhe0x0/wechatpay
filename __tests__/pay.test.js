@@ -19,7 +19,7 @@ const wechatPayment = new WechatPayment({
 })
 
 describe('jsapi', () => {
-  test('should return signed payment params', async () => {
+  test('should return signed payment params with jsapi', async () => {
     const orderID = cryptoRandomString({ length: 32 })
 
     const result = await wechatPayment.pay.jsapi({
@@ -40,6 +40,30 @@ describe('jsapi', () => {
     expect(result.package).toBeTruthy()
     expect(result.paySign).toBeTruthy()
     expect(result.signType).toBe('RSA')
+  })
+})
+
+describe('app', () => {
+  test('should return signed payment params with app api', async () => {
+    const orderID = cryptoRandomString({ length: 32 })
+
+    const result = await wechatPayment.pay.app({
+      appid: process.env.WECHAT_APP_ID,
+      description: 'wechatpay api testing',
+      out_trade_no: orderID,
+      notify_url: process.env.WECHAT_PAYMENT_API_NOTIFY_URL,
+      amount: {
+        total: 1,
+      },
+    })
+
+    expect(result.appid).toBeTruthy()
+    expect(result.partnerid).toBeTruthy()
+    expect(result.prepayid).toBeTruthy()
+    expect(result.package).toBe('Sign=WXPay')
+    expect(result.noncestr).toBeTruthy()
+    expect(result.timestamp).toBeTruthy()
+    expect(result.sign).toBeTruthy()
   })
 })
 
