@@ -127,6 +127,24 @@ export function h5(this: SDK, data: H5Data): Promise<H5Response> {
     .then((response) => response.body)
 }
 
+type NativeData = Omit<JSAPIData, 'payer'>
+
+interface NativeResponse {
+  code_url: string
+}
+
+export function native(this: SDK, data: NativeData): Promise<NativeResponse> {
+  _.assign(data, {
+    mchid: this.mchID,
+  })
+
+  return this.request()
+    .post<NativeResponse>('pay/transactions/native', {
+      json: data,
+    })
+    .then((response) => response.body)
+}
+
 type AppData = Omit<JSAPIData, 'payer'>
 
 interface AppResponse {
@@ -315,6 +333,7 @@ export interface PayAPI {
   jsapi(data: JSAPIData): Promise<JSAPISignedResponse>
   app(data: AppData): Promise<AppSignedResponse>
   h5(data: H5Data): Promise<H5Response>
+  native(data: NativeData): Promise<NativeResponse>
   decryptPaymentNotification(
     data: PaymentNotificationData
   ): PaymentNotificationResult

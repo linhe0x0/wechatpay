@@ -85,6 +85,24 @@ describe('h5', () => {
   })
 })
 
+describe('native', () => {
+  test('should return signed payment params with native api', async () => {
+    const orderID = cryptoRandomString({ length: 32 })
+
+    const result = await wechatPayment.pay.native({
+      appid: process.env.WECHAT_APP_ID,
+      description: 'wechatpay api testing',
+      out_trade_no: orderID,
+      notify_url: process.env.WECHAT_PAYMENT_API_NOTIFY_URL,
+      amount: {
+        total: 1,
+      },
+    })
+
+    expect(result.code_url).toBeTruthy()
+  })
+})
+
 describe('decryptPaymentNotification', () => {
   test('should return plaintext with valid cipher text', async () => {
     const result = wechatPayment.pay.decryptPaymentNotification({

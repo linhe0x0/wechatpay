@@ -13,6 +13,7 @@ import {
   decryptPaymentNotification,
   h5,
   jsapi,
+  native,
   queryTransactionInfo,
 } from './pay'
 import { decryptRefundNotification, queryRefundInfo, refund } from './refund'
@@ -77,6 +78,7 @@ export class WechatPayment implements SDK {
       jsapi: jsapi.bind(this),
       app: app.bind(this),
       h5: h5.bind(this),
+      native: native.bind(this),
       decryptPaymentNotification: decryptPaymentNotification.bind(this),
       queryTransactionInfo: queryTransactionInfo.bind(this),
       closeTransaction: closeTransaction.bind(this),
