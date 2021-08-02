@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import { getTimestampSeconds } from './helpers/date'
 import { getNonce } from './helpers/nonce'
-import { decrypt } from './helpers/sensitive'
+import { CipherData, decryptData } from './helpers/sensitive'
 import { signPayment } from './helpers/signature'
 
 import type { SDK } from './types'
@@ -108,23 +108,6 @@ export function jsapi(
     })
 }
 
-interface CipherData {
-  algorithm: string
-  ciphertext: string
-  associated_data?: string
-  nonce: string
-}
-
-export function decryptResponse(this: SDK, data: CipherData): any {
-  const result = decrypt(this.apiSecret, data)
-
-  try {
-    return JSON.parse(result)
-  } catch (err) {
-    throw new Error(`cannot parse plaintext: ${result}`)
-  }
-}
-
 interface PaymentNotificationResource extends CipherData {
   original_type: string
 }
@@ -194,7 +177,7 @@ export function decryptPaymentNotification(
   this: SDK,
   data: PaymentNotificationData
 ): PaymentNotificationResult {
-  return decryptResponse.call(this, data.resource)
+  return decryptData<PaymentNotificationResult>(this.apiSecret, data.resource)
 }
 
 interface QueryTransactionData {
@@ -263,7 +246,6 @@ export function closeTransaction(this: SDK, outTradeNo: string): Promise<void> {
 
 export interface PayAPI {
   jsapi(this: SDK, data: JSAPIData): Promise<JSAPISignedResponse>
-  decryptResponse(this: SDK, data: CipherData): any
   decryptPaymentNotification(
     this: SDK,
     data: PaymentNotificationData

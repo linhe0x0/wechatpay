@@ -1,5 +1,6 @@
 import { decrypt } from './helpers/sensitive'
-import { SDK } from './types'
+
+import type { SDK } from './types'
 
 interface RefundAmountFromItem {
   account: 'AVAILABLE' | 'UNAVAILABLE'

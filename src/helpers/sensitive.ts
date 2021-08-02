@@ -13,11 +13,11 @@ const algorithmMap: Record<Algorithm, CipherCCMTypes | CipherGCMTypes> = {
   AEAD_AES_256_GCM: 'aes-256-gcm',
 }
 
-interface CipherData {
+export interface CipherData {
   algorithm: string
   ciphertext: string
-  nonce: string
   associated_data?: string
+  nonce: string
 }
 
 export function decrypt(apiSecret: string, data: CipherData): string {
@@ -49,4 +49,10 @@ export function decrypt(apiSecret: string, data: CipherData): string {
   ]).toString('utf8')
 
   return plaintext
+}
+
+export function decryptData<T>(apiSecret: string, data: CipherData): T {
+  const result = decrypt(apiSecret, data)
+
+  return JSON.parse(result)
 }

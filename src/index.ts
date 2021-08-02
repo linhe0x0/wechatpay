@@ -13,12 +13,12 @@ import { getAuthorizationToken } from './helpers/signature'
 import {
   closeTransaction,
   decryptPaymentNotification,
-  decryptResponse,
   jsapi,
   PayAPI,
   queryTransaction,
 } from './pay'
 import { decryptRefundNotification, refund, RefundAPI } from './refund'
+import { decrypt, SensitiveAPI } from './sensitive'
 import { SignatureAPI, verify } from './signature'
 import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
 
@@ -34,8 +34,9 @@ export class WechatPayment implements SDK {
 
   certificateList: CertificateInfo[]
 
-  certificate: CertificateAPI
   signature: SignatureAPI
+  sensitive: SensitiveAPI
+  certificate: CertificateAPI
   pay: PayAPI
   refund: RefundAPI
 
@@ -56,15 +57,17 @@ export class WechatPayment implements SDK {
       `Init wechat payment sdk with mchID: ${metadata.mchID}, privateSerialNo: ${metadata.privateSerialNo}, apiSecret: ${metadata.apiSecret}`
     )
 
-    this.certificate = {
-      getCertificateList: getCertificateList.bind(this),
-    }
     this.signature = {
       verify: verify.bind(this),
     }
+    this.sensitive = {
+      decrypt: decrypt.bind(this),
+    }
+    this.certificate = {
+      getCertificateList: getCertificateList.bind(this),
+    }
     this.pay = {
       jsapi: jsapi.bind(this),
-      decryptResponse: decryptResponse.bind(this),
       decryptPaymentNotification: decryptPaymentNotification.bind(this),
       queryTransaction: queryTransaction.bind(this),
       closeTransaction: closeTransaction.bind(this),
