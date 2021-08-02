@@ -17,13 +17,12 @@ import {
   jsapi,
   PayAPI,
   queryTransaction,
-  verifyResponse,
 } from './pay'
 import { decryptRefundNotification, refund, RefundAPI } from './refund'
+import { SignatureAPI, verify } from './signature'
 import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
 
 import type { Got, NormalizedOptions } from 'got'
-
 export class WechatPayment implements SDK {
   // https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay3_1.shtml
   mchID: string // 商户 ID
@@ -36,6 +35,7 @@ export class WechatPayment implements SDK {
   certificateList: CertificateInfo[]
 
   certificate: CertificateAPI
+  signature: SignatureAPI
   pay: PayAPI
   refund: RefundAPI
 
@@ -59,9 +59,11 @@ export class WechatPayment implements SDK {
     this.certificate = {
       getCertificateList: getCertificateList.bind(this),
     }
+    this.signature = {
+      verify: verify.bind(this),
+    }
     this.pay = {
       jsapi: jsapi.bind(this),
-      verifyResponse: verifyResponse.bind(this),
       decryptResponse: decryptResponse.bind(this),
       decryptPaymentNotification: decryptPaymentNotification.bind(this),
       queryTransaction: queryTransaction.bind(this),

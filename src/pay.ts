@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { getTimestampSeconds } from './helpers/date'
 import { getNonce } from './helpers/nonce'
 import { decrypt } from './helpers/sensitive'
-import { signPayment, verifyResponseSignature } from './helpers/signature'
+import { signPayment } from './helpers/signature'
 
 import type { SDK } from './types'
 
@@ -106,27 +106,6 @@ export function jsapi(
         paySign: signature,
       }
     })
-}
-
-interface VerifyResponseData {
-  timestamp: string
-  nonce: string
-  body: string
-}
-
-export async function verifyResponse(
-  this: SDK,
-  serial: string,
-  data: VerifyResponseData,
-  signature: string
-): Promise<boolean> {
-  const certificate = await this.getCertificateInfo(serial)
-
-  return verifyResponseSignature(
-    certificate.encrypt_certificate.publicKey,
-    data,
-    signature
-  )
 }
 
 interface CipherData {
@@ -284,12 +263,6 @@ export function closeTransaction(this: SDK, outTradeNo: string): Promise<void> {
 
 export interface PayAPI {
   jsapi(this: SDK, data: JSAPIData): Promise<JSAPISignedResponse>
-  verifyResponse(
-    this: SDK,
-    serial: string,
-    data: VerifyResponseData,
-    signature: string
-  ): Promise<boolean>
   decryptResponse(this: SDK, data: CipherData): any
   decryptPaymentNotification(
     this: SDK,
