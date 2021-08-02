@@ -11,6 +11,7 @@ import {
   app,
   closeTransaction,
   decryptPaymentNotification,
+  h5,
   jsapi,
   queryTransactionInfo,
 } from './pay'
@@ -75,6 +76,7 @@ export class WechatPayment implements SDK {
     this.pay = {
       jsapi: jsapi.bind(this),
       app: app.bind(this),
+      h5: h5.bind(this),
       decryptPaymentNotification: decryptPaymentNotification.bind(this),
       queryTransactionInfo: queryTransactionInfo.bind(this),
       closeTransaction: closeTransaction.bind(this),

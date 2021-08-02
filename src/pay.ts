@@ -109,6 +109,24 @@ export function jsapi(
     })
 }
 
+type H5Data = Omit<JSAPIData, 'payer'>
+
+interface H5Response {
+  h5_url: string
+}
+
+export function h5(this: SDK, data: H5Data): Promise<H5Response> {
+  _.assign(data, {
+    mchid: this.mchID,
+  })
+
+  return this.request()
+    .post<H5Response>('pay/transactions/h5', {
+      json: data,
+    })
+    .then((response) => response.body)
+}
+
 type AppData = Omit<JSAPIData, 'payer'>
 
 interface AppResponse {
@@ -296,6 +314,7 @@ export function closeTransaction(this: SDK, outTradeNo: string): Promise<void> {
 export interface PayAPI {
   jsapi(data: JSAPIData): Promise<JSAPISignedResponse>
   app(data: AppData): Promise<AppSignedResponse>
+  h5(data: H5Data): Promise<H5Response>
   decryptPaymentNotification(
     data: PaymentNotificationData
   ): PaymentNotificationResult
