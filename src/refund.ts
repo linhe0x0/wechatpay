@@ -3,6 +3,14 @@ import { decryptData } from './helpers/sensitive'
 import type { CipherData } from './helpers/sensitive'
 import type { SDK } from './types'
 
+type RefundChannel = 'ORIGINAL' | 'BALANCE' | 'OTHER_BALANCE' | 'OTHER_BANKCARD'
+type RefundFundsAccount =
+  | 'UNSETTLED'
+  | 'AVAILABLE'
+  | 'UNAVAILABLE'
+  | 'OPERATION'
+  | 'BASIC'
+
 interface RefundAmountFromItem {
   account: 'AVAILABLE' | 'UNAVAILABLE'
   amount: number
@@ -49,12 +57,12 @@ interface RefundResponse {
   out_refund_no: string
   transaction_id: string
   out_trade_no: string
-  channel: string
+  channel: RefundChannel
   user_received_account: string
   success_time?: string
   create_time: string
   status: 'SUCCESS' | 'CLOSED' | 'PROCESSING' | 'ABNORMAL'
-  funds_account?: string
+  funds_account?: RefundFundsAccount
   amount: {
     total: number
     refund: number
@@ -109,9 +117,44 @@ export function decryptRefundNotification(
   return decryptData<RefundNotificationResult>(this.apiSecret, data.resource)
 }
 
+interface QueryRefundResponse {
+  refund_id: string
+  out_refund_no: string
+  transaction_id: string
+  out_trade_no: string
+  channel: RefundChannel
+  user_received_account: string
+  success_time?: string
+  create_time: string
+  status: 'SUCCESS' | 'CLOSED' | 'PROCESSING' | 'ABNORMAL'
+  funds_account: RefundFundsAccount
+  amount: {
+    total: number
+    refund: number
+    from?: RefundAmountFromItem[]
+    payer_total: number
+    payer_refund: number
+    settlement_refund: number
+    settlement_total: number
+    discount_refund: number
+    currency: string
+  }
+  promotion_detail?: PromotionDetailItem[]
+}
+
+export function queryRefund(
+  this: SDK,
+  outRefundNo: string
+): Promise<QueryRefundResponse> {
+  return this.request()
+    .get<QueryRefundResponse>(`refund/domestic/refunds/${outRefundNo}`)
+    .then((response) => response.body)
+}
+
 export interface RefundAPI {
   refund(data: RefundData): Promise<RefundResponse>
   decryptRefundNotification(
     data: RefundNotificationData
   ): RefundNotificationResult
+  queryRefund(outRefundNo: string): Promise<QueryRefundResponse>
 }

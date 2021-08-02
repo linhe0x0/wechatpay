@@ -44,3 +44,13 @@ describe('decryptRefundNotification', () => {
     expect(result.mchid).toBe(process.env.WECHAT_PAYMENT_MCH_ID)
   })
 })
+
+describe('queryRefund', () => {
+  test('should return refund info with valid data', async () => {
+    const result = await wechatPayment.refund.queryRefund(
+      'f5eb2ffcfa779934e16fcf671a7c82f2'
+    )
+
+    expect(result.out_refund_no).toBe('f5eb2ffcfa779934e16fcf671a7c82f2')
+  })
+})

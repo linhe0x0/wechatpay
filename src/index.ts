@@ -12,7 +12,7 @@ import {
   jsapi,
   queryTransaction,
 } from './pay'
-import { decryptRefundNotification, refund } from './refund'
+import { decryptRefundNotification, queryRefund, refund } from './refund'
 import { decrypt, SensitiveAPI } from './sensitive'
 import { verify } from './signature'
 
@@ -76,6 +76,7 @@ export class WechatPayment implements SDK {
     this.refund = {
       refund: refund.bind(this),
       decryptRefundNotification: decryptRefundNotification.bind(this),
+      queryRefund: queryRefund.bind(this),
     }
   }
 
