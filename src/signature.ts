@@ -1,5 +1,6 @@
 import { verifyResponseSignature } from './helpers/signature'
-import { SDK } from './types'
+
+import type { SDK } from './types'
 
 interface VerifyResponseData {
   timestamp: string

@@ -2,11 +2,7 @@ import { BasicReporter, JSONReporter, LogLevel } from 'consola'
 import got from 'got'
 import _ from 'lodash'
 
-import {
-  CertificateAPI,
-  getCertificateList,
-  getValidCertificateInfo,
-} from './certificates'
+import { getCertificateList, getValidCertificateInfo } from './certificates'
 import logger from './helpers/logger'
 import { outputRequest, outputResponse, parseError } from './helpers/request'
 import { getAuthorizationToken } from './helpers/signature'
@@ -14,15 +10,20 @@ import {
   closeTransaction,
   decryptPaymentNotification,
   jsapi,
-  PayAPI,
   queryTransaction,
 } from './pay'
-import { decryptRefundNotification, refund, RefundAPI } from './refund'
+import { decryptRefundNotification, refund } from './refund'
 import { decrypt, SensitiveAPI } from './sensitive'
-import { SignatureAPI, verify } from './signature'
-import { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
+import { verify } from './signature'
 
 import type { Got, NormalizedOptions } from 'got'
+
+import type { SignatureAPI } from './signature'
+import type { CertificateInfo, SDK, SDKMetadata, SDKOptions } from './types'
+import type { RefundAPI } from './refund'
+import type { PayAPI } from './pay'
+import type { CertificateAPI } from './certificates'
+
 export class WechatPayment implements SDK {
   // https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay3_1.shtml
   mchID: string // 商户 ID

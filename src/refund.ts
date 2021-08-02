@@ -1,5 +1,6 @@
-import { CipherData, decryptData } from './helpers/sensitive'
+import { decryptData } from './helpers/sensitive'
 
+import type { CipherData } from './helpers/sensitive'
 import type { SDK } from './types'
 
 interface RefundAmountFromItem {

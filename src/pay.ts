@@ -2,9 +2,10 @@ import _ from 'lodash'
 
 import { getTimestampSeconds } from './helpers/date'
 import { getNonce } from './helpers/nonce'
-import { CipherData, decryptData } from './helpers/sensitive'
+import { decryptData } from './helpers/sensitive'
 import { signPayment } from './helpers/signature'
 
+import type { CipherData } from './helpers/sensitive'
 import type { SDK } from './types'
 
 interface Payer {
