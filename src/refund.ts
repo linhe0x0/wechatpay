@@ -142,7 +142,7 @@ interface QueryRefundResponse {
   promotion_detail?: PromotionDetailItem[]
 }
 
-export function queryRefund(
+export function queryRefundInfo(
   this: SDK,
   outRefundNo: string
 ): Promise<QueryRefundResponse> {
@@ -156,5 +156,5 @@ export interface RefundAPI {
   decryptRefundNotification(
     data: RefundNotificationData
   ): RefundNotificationResult
-  queryRefund(outRefundNo: string): Promise<QueryRefundResponse>
+  queryRefundInfo(outRefundNo: string): Promise<QueryRefundResponse>
 }

@@ -210,7 +210,7 @@ interface QueryTransactionResponse {
   promotion_detail?: PromotionDetail[]
 }
 
-export function queryTransaction(
+export function queryTransactionInfo(
   this: SDK,
   filter: QueryTransactionData
 ): Promise<QueryTransactionResponse> {
@@ -250,7 +250,7 @@ export interface PayAPI {
   decryptPaymentNotification(
     data: PaymentNotificationData
   ): PaymentNotificationResult
-  queryTransaction(
+  queryTransactionInfo(
     filter: QueryTransactionData
   ): Promise<QueryTransactionResponse>
   closeTransaction(outTradeNo: string): Promise<void>

@@ -72,9 +72,9 @@ describe('decryptPaymentNotification', () => {
   })
 })
 
-describe('queryTransaction', () => {
+describe('queryTransactionInfo', () => {
   test('should return transaction info with valid transaction_id', async () => {
-    const result = await wechatPayment.pay.queryTransaction({
+    const result = await wechatPayment.pay.queryTransactionInfo({
       transaction_id: '4200001154202107300042303661',
     })
 
@@ -83,7 +83,7 @@ describe('queryTransaction', () => {
   })
 
   test('should return transaction info with valid out_trade_no', async () => {
-    const result = await wechatPayment.pay.queryTransaction({
+    const result = await wechatPayment.pay.queryTransactionInfo({
       out_trade_no: '9ebf194d5bd04a0bb3848676',
     })
 
@@ -93,13 +93,13 @@ describe('queryTransaction', () => {
 
   test('should throw error if transaction_id ans out_trade_no are missing', async () => {
     expect(() => {
-      wechatPayment.pay.queryTransaction({})
+      wechatPayment.pay.queryTransactionInfo({})
     }).toThrow('the transaction_id or out_trade_no is missing')
   })
 
   test('should throw error if transaction_id ans out_trade_no are in conflict', async () => {
     expect(() => {
-      wechatPayment.pay.queryTransaction({
+      wechatPayment.pay.queryTransactionInfo({
         transaction_id: 't',
         out_trade_no: 'o',
       })

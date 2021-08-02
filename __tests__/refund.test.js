@@ -45,9 +45,9 @@ describe('decryptRefundNotification', () => {
   })
 })
 
-describe('queryRefund', () => {
+describe('queryRefundInfo', () => {
   test('should return refund info with valid data', async () => {
-    const result = await wechatPayment.refund.queryRefund(
+    const result = await wechatPayment.refund.queryRefundInfo(
       'f5eb2ffcfa779934e16fcf671a7c82f2'
     )
 
