@@ -15,7 +15,7 @@ import {
 } from './pay'
 import { decryptRefundNotification, queryRefundInfo, refund } from './refund'
 import { decrypt, SensitiveAPI } from './sensitive'
-import { verify } from './signature'
+import { sign, verify } from './signature'
 
 import type { Got, NormalizedOptions } from 'got'
 
@@ -62,6 +62,7 @@ export class WechatPayment implements SDK {
     )
 
     this.signature = {
+      sign: sign.bind(this),
       verify: verify.bind(this),
     }
     this.sensitive = {
@@ -136,14 +137,13 @@ export class WechatPayment implements SDK {
 
   request(): Got {
     const addAuthorization = (options: NormalizedOptions) => {
-      const serialNo = this.privateSerialNo
       const method = options.method.toUpperCase()
       const url = `${options.url.pathname}${options.url.search}`
       const body = options.json ? JSON.stringify(options.json) : ''
 
       const authorization = getAuthorizationToken(
         this.privateKey,
-        serialNo,
+        this.privateSerialNo,
         this.mchID,
         method,
         url,
