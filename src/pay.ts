@@ -109,7 +109,22 @@ export function jsapi(
     })
 }
 
-type H5Data = Omit<JSAPIData, 'payer'>
+type H5Data = {
+  appid: string
+  description: string
+  out_trade_no: string
+  time_expire?: string
+  attach?: string
+  notify_url: string
+  goods_tag?: string
+  amount: {
+    total: number
+    currency?: string
+  }
+  detail?: PayDetail
+  scene_info: SceneInfo
+  settle_info?: SettleInfo
+}
 
 interface H5Response {
   h5_url: string

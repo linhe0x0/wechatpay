@@ -79,6 +79,9 @@ describe('h5', () => {
       amount: {
         total: 1,
       },
+      scene_info: {
+        payer_client_ip: '222.137.128.116',
+      },
     })
 
     expect(result.h5_url).toBeTruthy()
