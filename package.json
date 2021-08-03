@@ -1,6 +1,6 @@
 {
   "name": "@sqrtthree/wechatpay",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "微信支付 APIv3 的 Node.js Library",
   "main": "dist/index.js",
   "scripts": {
