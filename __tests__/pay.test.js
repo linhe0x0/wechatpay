@@ -2,7 +2,7 @@ const fs = require('fs')
 const dotenv = require('dotenv')
 const cryptoRandomString = require('crypto-random-string')
 
-const { WechatPayment } = require('../dist/index')
+const { WechatPay } = require('../dist/index')
 
 dotenv.config()
 
@@ -11,7 +11,7 @@ const privateKey = fs.readFileSync(
   'utf8'
 )
 
-const wechatPayment = new WechatPayment({
+const wechatPay = new WechatPay({
   mchID: process.env.WECHAT_PAYMENT_MCH_ID,
   privateKey,
   privateSerialNo: process.env.WECHAT_PAYMENT_PRIVATE_SERIAL_NO,
@@ -22,7 +22,7 @@ describe('jsapi', () => {
   test('should return signed payment params with jsapi', async () => {
     const orderID = cryptoRandomString({ length: 32 })
 
-    const result = await wechatPayment.pay.jsapi({
+    const result = await wechatPay.pay.jsapi({
       appid: process.env.WECHAT_APP_ID,
       description: 'wechatpay api testing',
       out_trade_no: orderID,
@@ -47,7 +47,7 @@ describe('app', () => {
   test('should return signed payment params with app api', async () => {
     const orderID = cryptoRandomString({ length: 32 })
 
-    const result = await wechatPayment.pay.app({
+    const result = await wechatPay.pay.app({
       appid: process.env.WECHAT_APP_ID,
       description: 'wechatpay api testing',
       out_trade_no: orderID,
@@ -71,7 +71,7 @@ describe('h5', () => {
   test('should return signed payment params with h5 api', async () => {
     const orderID = cryptoRandomString({ length: 32 })
 
-    const result = await wechatPayment.pay.h5({
+    const result = await wechatPay.pay.h5({
       appid: process.env.WECHAT_APP_ID,
       description: 'wechatpay api testing',
       out_trade_no: orderID,
@@ -92,7 +92,7 @@ describe('native', () => {
   test('should return signed payment params with native api', async () => {
     const orderID = cryptoRandomString({ length: 32 })
 
-    const result = await wechatPayment.pay.native({
+    const result = await wechatPay.pay.native({
       appid: process.env.WECHAT_APP_ID,
       description: 'wechatpay api testing',
       out_trade_no: orderID,
@@ -108,7 +108,7 @@ describe('native', () => {
 
 describe('decryptPaymentNotification', () => {
   test('should return plaintext with valid cipher text', async () => {
-    const result = wechatPayment.pay.decryptPaymentNotification({
+    const result = wechatPay.pay.decryptPaymentNotification({
       resource: {
         algorithm: 'AEAD_AES_256_GCM',
         ciphertext:
@@ -123,7 +123,7 @@ describe('decryptPaymentNotification', () => {
 
   test('should throw an error with invalid cipher text', async () => {
     expect(() => {
-      wechatPayment.pay.decryptPaymentNotification({
+      wechatPay.pay.decryptPaymentNotification({
         resource: {
           algorithm: 'AEAD_AES_256_GCM',
           ciphertext: 'invalid cipher text',
@@ -137,7 +137,7 @@ describe('decryptPaymentNotification', () => {
 
 describe('queryTransactionInfo', () => {
   test('should return transaction info with valid transaction_id', async () => {
-    const result = await wechatPayment.pay.queryTransactionInfo({
+    const result = await wechatPay.pay.queryTransactionInfo({
       transaction_id: '4200001154202107300042303661',
     })
 
@@ -146,7 +146,7 @@ describe('queryTransactionInfo', () => {
   })
 
   test('should return transaction info with valid out_trade_no', async () => {
-    const result = await wechatPayment.pay.queryTransactionInfo({
+    const result = await wechatPay.pay.queryTransactionInfo({
       out_trade_no: '9ebf194d5bd04a0bb3848676',
     })
 
@@ -156,13 +156,13 @@ describe('queryTransactionInfo', () => {
 
   test('should throw error if transaction_id ans out_trade_no are missing', async () => {
     expect(() => {
-      wechatPayment.pay.queryTransactionInfo({})
+      wechatPay.pay.queryTransactionInfo({})
     }).toThrow('the transaction_id or out_trade_no is missing')
   })
 
   test('should throw error if transaction_id ans out_trade_no are in conflict', async () => {
     expect(() => {
-      wechatPayment.pay.queryTransactionInfo({
+      wechatPay.pay.queryTransactionInfo({
         transaction_id: 't',
         out_trade_no: 'o',
       })
@@ -172,7 +172,7 @@ describe('queryTransactionInfo', () => {
 
 describe('closeTransaction', () => {
   test('should return OK with valid transaction_id', async () => {
-    const result = await wechatPayment.pay.closeTransaction(
+    const result = await wechatPay.pay.closeTransaction(
       '4200001154202107300042303661'
     )
 
@@ -181,7 +181,7 @@ describe('closeTransaction', () => {
 
   test('should return 404 with invalid transaction_id', async () => {
     try {
-      await wechatPayment.pay.closeTransaction('invalid transaction id')
+      await wechatPay.pay.closeTransaction('invalid transaction id')
     } catch (err) {
       expect(err.name).toBe('PARAM_ERROR')
     }

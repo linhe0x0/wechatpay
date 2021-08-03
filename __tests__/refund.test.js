@@ -1,7 +1,7 @@
 const fs = require('fs')
 const dotenv = require('dotenv')
 const cryptoRandomString = require('crypto-random-string')
-const { WechatPayment } = require('../dist/index')
+const { WechatPay } = require('../dist/index')
 
 dotenv.config()
 
@@ -10,7 +10,7 @@ const privateKey = fs.readFileSync(
   'utf8'
 )
 
-const wechatPayment = new WechatPayment({
+const wechatPay = new WechatPay({
   mchID: process.env.WECHAT_PAYMENT_MCH_ID,
   privateKey,
   privateSerialNo: process.env.WECHAT_PAYMENT_PRIVATE_SERIAL_NO,
@@ -21,7 +21,7 @@ const wechatPayment = new WechatPayment({
 describe('refund', () => {
   test('should return error with invalid data', async () => {
     try {
-      await wechatPayment.refund.refund({})
+      await wechatPay.refund.refund({})
     } catch (err) {
       expect(err.name).toBe('PARAM_ERROR')
     }
@@ -30,7 +30,7 @@ describe('refund', () => {
 
 describe('decryptRefundNotification', () => {
   test('should return error with invalid data', () => {
-    const result = wechatPayment.refund.decryptRefundNotification({
+    const result = wechatPay.refund.decryptRefundNotification({
       resource: {
         original_type: 'refund',
         algorithm: 'AEAD_AES_256_GCM',
@@ -47,7 +47,7 @@ describe('decryptRefundNotification', () => {
 
 describe('queryRefundInfo', () => {
   test('should return refund info with valid data', async () => {
-    const result = await wechatPayment.refund.queryRefundInfo(
+    const result = await wechatPay.refund.queryRefundInfo(
       'f5eb2ffcfa779934e16fcf671a7c82f2'
     )
 

@@ -29,7 +29,7 @@ import type { PayAPI } from './pay'
 import type { CertificateAPI } from './certificates'
 import type { billAPI } from './bill'
 
-export class WechatPayment implements SDK {
+export class WechatPay implements SDK {
   // https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay3_1.shtml
   mchID: string // 商户 ID
   privateKey: string // 商户 API 私钥
@@ -96,7 +96,7 @@ export class WechatPayment implements SDK {
     }
   }
 
-  config(options: Partial<SDKOptions>): WechatPayment {
+  config(options: Partial<SDKOptions>): WechatPay {
     this.options = _.assign(this.options, options)
 
     this.configLog()

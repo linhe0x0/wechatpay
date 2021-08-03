@@ -1,7 +1,7 @@
 const fs = require('fs')
 const dotenv = require('dotenv')
 const cryptoRandomString = require('crypto-random-string')
-const { WechatPayment } = require('../dist/index')
+const { WechatPay } = require('../dist/index')
 
 dotenv.config()
 
@@ -10,7 +10,7 @@ const privateKey = fs.readFileSync(
   'utf8'
 )
 
-const wechatPayment = new WechatPayment({
+const wechatPay = new WechatPay({
   mchID: process.env.WECHAT_PAYMENT_MCH_ID,
   privateKey,
   privateSerialNo: process.env.WECHAT_PAYMENT_PRIVATE_SERIAL_NO,
@@ -21,7 +21,7 @@ const wechatPayment = new WechatPayment({
 describe('getTradeBillList', () => {
   test('should return 400 with special day', async () => {
     try {
-      await wechatPayment.bill.getTradeBillList({
+      await wechatPay.bill.getTradeBillList({
         bill_date: '2021-08-01',
       })
     } catch (err) {
@@ -33,7 +33,7 @@ describe('getTradeBillList', () => {
 describe('getFundFlowBillList', () => {
   test('should return 400 with special day', async () => {
     try {
-      await wechatPayment.bill.getFundFlowBillList({
+      await wechatPay.bill.getFundFlowBillList({
         bill_date: '2021-08-01',
       })
     } catch (err) {

@@ -2,7 +2,7 @@ const fs = require('fs')
 const dotenv = require('dotenv')
 const cryptoRandomString = require('crypto-random-string')
 
-const { WechatPayment } = require('../dist/index')
+const { WechatPay } = require('../dist/index')
 
 dotenv.config()
 
@@ -11,7 +11,7 @@ const privateKey = fs.readFileSync(
   'utf8'
 )
 
-const wechatPayment = new WechatPayment({
+const wechatPay = new WechatPay({
   mchID: process.env.WECHAT_PAYMENT_MCH_ID,
   privateKey,
   privateSerialNo: process.env.WECHAT_PAYMENT_PRIVATE_SERIAL_NO,
@@ -20,7 +20,7 @@ const wechatPayment = new WechatPayment({
 
 describe('verify', () => {
   test('should return true with valid signature', async () => {
-    const result = await wechatPayment.signature.verify(
+    const result = await wechatPay.signature.verify(
       process.env.TEST_WECHAT_PAYMENT_PUBLIC_SERIAL_NO,
       {
         nonce: 'WzE8A8OCO6Z2V5FnpjDEJLdIvfX4Ma78',
@@ -34,7 +34,7 @@ describe('verify', () => {
   })
 
   test('should return false with invalid signature', async () => {
-    const result = await wechatPayment.signature.verify(
+    const result = await wechatPay.signature.verify(
       process.env.TEST_WECHAT_PAYMENT_PUBLIC_SERIAL_NO,
       {
         nonce: 'WzE8A8OCO6Z2V5FnpjDEJLdIvfX4Ma78',
