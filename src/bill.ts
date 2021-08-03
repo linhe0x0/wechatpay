@@ -1,9 +1,12 @@
 import { createWriteStream } from 'fs'
-import { pipeline } from 'stream/promises'
+import stream from 'stream'
+import { promisify } from 'util'
 
 import type { Readable } from 'stream'
 
 import type { SDK } from './types'
+
+const pipeline = promisify(stream.pipeline)
 
 interface GetTradeBillListData {
   bill_date: string
