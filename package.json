@@ -37,7 +37,7 @@
     "lodash": "~4.17.21"
   },
   "devDependencies": {
-    "@sqrtthree/eslint-config-ts": "~0.1.0",
+    "@sqrtthree/eslint-config-ts": "~0.2.0",
     "@sqrtthree/prettier-config": "~2.0.1",
     "@sqrtthree/tsconfig": "~1.0.0",
     "@types/jest": "~26.0.24",
