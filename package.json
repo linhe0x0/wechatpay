@@ -40,7 +40,7 @@
     "@sqrtthree/eslint-config-ts": "~0.1.0",
     "@sqrtthree/prettier-config": "~2.0.1",
     "@sqrtthree/tsconfig": "~1.0.0",
-    "@types/jest": "~26.0.24",
+    "@types/jest": "~27.4.0",
     "@types/lodash": "~4.14.171",
     "dotenv": "~10.0.0",
     "jest": "~27.0.6",
